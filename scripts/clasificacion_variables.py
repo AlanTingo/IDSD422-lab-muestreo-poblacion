@@ -38,23 +38,27 @@ print()
 # TODO 2: completa el bucle para imprimir, por columna, cuántos valores únicos
 #         hay y cuáles son. Pista: for columna in clientes.columns: ...  con
 #         clientes[columna].unique() y len(). ¿Cuántas categorías tiene genero?
-# for columna in clientes.columns:
-#     ...
+for columna in clientes.columns:
+    valores = sorted(clientes[columna].unique().tolist())
+    print(f"{columna}: {len(valores)} únicos -> {valores}")
 print()
 
-# ---------------------------------------------------------------------------
-# 4. Declarar el orden de las variables ordinales
-# ---------------------------------------------------------------------------
-# Una ordinal se guarda como texto (o como número) y su orden natural se pierde:
-# alfabéticamente "Posgrado" iría antes que "Primaria", que no tiene sentido.
-#
-# TODO 3: convierte nivel_educacion a categoría ordenada.
-#         Pista: astype(pd.CategoricalDtype(categories=[...], ordered=True)).
-#         Comprueba con .min(): debe devolver "Primaria".
-# TODO 4: haz lo mismo con satisfaccion (escala 1–5 como etiquetas ordenadas).
-#         Prueba extra: ¿qué pasa si en la lista de categorías escribes
-#         "Postgrado" (con t) para nivel_educacion? Cuenta los faltantes con
-#         .isna().sum() — la trampa del typo es silenciosa.
+# TODO 3: nivel_educacion como categoría ordenada
+orden_edu = ["Primaria", "Secundaria", "Universidad", "Posgrado"]
+clientes["nivel_educacion"] = clientes["nivel_educacion"].astype(
+    pd.CategoricalDtype(categories=orden_edu, ordered=True))
+print("Mínimo de nivel_educacion:", clientes["nivel_educacion"].min())
+
+# TODO 4: satisfaccion como categoría ordenada (escala 1-5)
+clientes["satisfaccion"] = clientes["satisfaccion"].astype(
+    pd.CategoricalDtype(categories=[1, 2, 3, 4, 5], ordered=True))
+print("Mínimo de satisfaccion:", clientes["satisfaccion"].min())
+
+# Prueba extra: el typo "Postgrado" (con t) falla en silencio
+orden_typo = ["Primaria", "Secundaria", "Universidad", "Postgrado"]
+con_typo = clientes["nivel_educacion"].astype(str).astype(
+    pd.CategoricalDtype(categories=orden_typo, ordered=True))
+print("Faltantes por el typo:", con_typo.isna().sum())
 print()
 
 # ---------------------------------------------------------------------------
@@ -63,14 +67,14 @@ print()
 # TODO 5: completa el resumen con el tipo de cada variable (el criterio que
 #         justifica cada clasificación va en el informe).
 clasificacion = {
-    "cliente_id": "…",
-    "edad": "…",
-    "numero_hijos": "…",
-    "genero": "…",
-    "nivel_educacion": "…",
-    "ciudad": "…",
-    "ingresos_mensuales": "…",
-    "satisfaccion": "…",
+    "cliente_id": "identificador",
+    "edad": "cuantitativa continua",
+    "numero_hijos": "cuantitativa discreta",
+    "genero": "cualitativa nominal",
+    "nivel_educacion": "cualitativa ordinal",
+    "ciudad": "cualitativa nominal",
+    "ingresos_mensuales": "cuantitativa continua",
+    "satisfaccion": "cualitativa ordinal",
 }
 print("Resumen de la clasificación (para el informe):")
 for variable, tipo in clasificacion.items():
